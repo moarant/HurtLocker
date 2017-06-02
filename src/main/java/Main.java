@@ -1,5 +1,4 @@
 import org.apache.commons.io.IOUtils;
-import java.io.IOException;
 
 public class Main {
     public String readRawDataToString() throws Exception{
@@ -10,11 +9,14 @@ public class Main {
 
     public static void main(String[] args) throws Exception{
         String output = (new Main()).readRawDataToString();
-        Finder finder = new Finder();
-        finder.splitTextFile(output);
+        Parser parser = new Parser();
+        parser.splitTextFile(output);
+
+
 
 
 
 
     }
+
 }

@@ -29,4 +29,11 @@ public class Item {
     public String getExpiration() {
         return expiration;
     }
+
+
+    @Override
+    public String toString(){
+        return "Name: "+ this.name+" Price: "+ this.price+ " Type: " + this.type+ " Expiration: "+ this.expiration;
+
+    }
 }

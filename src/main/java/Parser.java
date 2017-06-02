@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /**
  * Created by mollyarant on 5/31/17.
  */
-public class Finder extends IOException {
+public class Parser extends IOException {
     private String[] dataOutputArray;
     private String result;
     final Pattern ENTIRETEXTFILESPLITTER= Pattern.compile("##");
@@ -17,19 +17,37 @@ public class Finder extends IOException {
     final Pattern PRICE= Pattern.compile("(\\w{5}:)(\\d\\.\\d{2};)");
     final Pattern TYPEFOOD= Pattern.compile("(\\w{4}:\\w{4}[;^%*!@])");
     final Pattern EXPIRATIONDATE= Pattern.compile("expiration:\\d\\/\\d{2}\\/\\d{4}");
-    ArrayList <String> list = new ArrayList<String>();
+    ArrayList <String> OriginalDataOutput = new ArrayList<String>();
+    ArrayList<Item> ItemList= new ArrayList<Item>();
+    private int errorCounter=0;
 
 
 
 
-    public String[] splitTextFile(String file){
-       dataOutputArray=ENTIRETEXTFILESPLITTER.split(file);
-       for(int i=0;i<dataOutputArray.length;i++){
-           System.out.println(dataOutputArray[i]);
+    public ArrayList <String> splitTextFile(String file){
+       String [] temp=ENTIRETEXTFILESPLITTER.split(file);
+       for(int i=0;i<temp.length;i++){
+           OriginalDataOutput.add(temp[i]);
        }
-        return dataOutputArray;
+        return OriginalDataOutput;
 
     }
+
+    public Item makeItem(String line) throws IllegalArgumentException{
+        String name= readName(line);
+        String price=readPrice(line);
+        String type= readType(line);
+        String expiration= readExpiration(line);
+        return new Item(name, price, type, expiration);
+    }
+
+   public ArrayList<Item> makeItems(ArrayList <String> list){
+        for(int i=0;i<list.size();i++){
+            Item newItem= makeItem(list.get(i));
+            ItemList.add(newItem);
+        }
+        return ItemList;
+   }
 
     public String readName(String line)throws IllegalArgumentException{
         Matcher name= Pattern.compile("([n|N]\\w{3}:)(\\w+)").matcher(line);
@@ -37,6 +55,7 @@ public class Finder extends IOException {
             return name.group(2);
         }
         else{
+            errorCounter+=1;
             throw new IllegalArgumentException("this is missing a value");
         }
     }
@@ -47,6 +66,7 @@ public class Finder extends IOException {
             return price.group(2);
         }
         else{
+            errorCounter+=1;
             throw new IllegalArgumentException("this is missing a value");
         }
     }
@@ -57,6 +77,7 @@ public class Finder extends IOException {
             return type.group(2);
         }
         else{
+            errorCounter+=1;
             throw new IllegalArgumentException("this is missing a value");
         }
     }
@@ -67,18 +88,16 @@ public class Finder extends IOException {
             return expiration.group(2);
         }
         else{
+            errorCounter+=1;
             throw new IllegalArgumentException("this is missing a value");
         }
     }
 
 
-    public Item makeItem(String line){
-        String name= readName(line);
-        String price=readPrice(line);
-        String type= readType(line);
-        String expiration= readExpiration(line);
-        return new Item(name, price, type, expiration);
-    }
+
+
+
+
 
 
 
